@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 
 import 'package:expense_app/widgets/new_transactions.dart';
+import 'package:flutter/services.dart';
 import './widgets/transaction_list.dart';
 import './models/transactions.dart';
 import './widgets/chart.dart';
 
 void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  /// ]);
   runApp(MyApp());
 }
 
@@ -69,6 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // ),
   ];
 
+  bool _showChart = false;
+
   List<Transaction> get _recentTransactions {
     return _userTransaction.where((tx) {
       return tx.date.isAfter(DateTime.now().subtract(
@@ -92,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _startNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
+      // isScrollControlled: true,
       context: ctx,
       builder: (_) {
         return NewTransaction(_addNewTransaction);
@@ -107,24 +116,66 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Expense App",
-        ),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => _startNewTransaction(context))
-        ],
+    final mediaQuery = MediaQuery.of(context);
+
+    final appBar = AppBar(
+      title: Text(
+        "Expense App",
       ),
+      actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => _startNewTransaction(context))
+      ],
+    );
+
+    final txlist = Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            .7,
+        child: TransactionList(_userTransaction, _deleteTransaction));
+
+    var isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Chart(_recentTransactions),
-            TransactionList(_userTransaction, _deleteTransaction),
+            if (!isLandscape)
+              Container(
+                  height: (mediaQuery.size.height -
+                          appBar.preferredSize.height -
+                          mediaQuery.padding.top) *
+                      .3,
+                  child: Chart(_recentTransactions)),
+            if (!isLandscape) txlist,
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Show Chart'),
+                  Switch(
+                      value: _showChart,
+                      onChanged: (val) {
+                        setState(() {
+                          _showChart = val;
+                        });
+                      }),
+                ],
+              ),
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      height: (mediaQuery.size.height -
+                              appBar.preferredSize.height -
+                              mediaQuery.padding.top) *
+                          .7,
+                      child: Chart(_recentTransactions))
+                  : txlist,
           ],
         ),
       ),
