@@ -3,7 +3,14 @@ import 'package:provider/provider.dart';
 
 import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
+import './screens/cart_screen.dart';
+import './screens/orders_screen.dart';
+import './screens/user_products_screen.dart';
+import './screens/edit_product_screen.dart';
+
 import './providers/products.dart';
+import './providers/cart.dart';
+import './providers/orders.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,8 +30,18 @@ class MyApp extends StatelessWidget {
     ALSO, ChangeNotifierProvider automatically cleansup the widgets when no longer required
     inorder to save memory and avoid memory leaks.
     */
-    return ChangeNotifierProvider(
-      create: (ctx) => Products(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => Products(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Cart(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Orders(),
+        )
+      ],
       // value: Products(),
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -37,6 +54,10 @@ class MyApp extends StatelessWidget {
         home: ProductsOverviewScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+          CartScreen.routName: (ctx) => CartScreen(),
+          OrdersScreen.routNamed: (ctx) => OrdersScreen(),
+          UserProductsScreen.routNamed: (ctx) => UserProductsScreen(),
+          EditProductScreen.routeNamed: (ctx) => EditProductScreen(),
         },
       ),
     );

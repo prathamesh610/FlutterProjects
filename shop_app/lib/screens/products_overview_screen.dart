@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
+import '../providers/cart.dart';
 
 import '../widgets/products_grid.dart';
+import '../widgets/badge.dart';
+import '../widgets/app_drawer.dart';
+
+import './cart_screen.dart';
 
 // Enums are used to assign labels to integers.
 enum FilterOptions {
@@ -10,9 +16,14 @@ enum FilterOptions {
   All,
 }
 
-class ProductsOverviewScreen extends StatelessWidget {
-  final List<Product> products = [];
+class ProductsOverviewScreen extends StatefulWidget {
+  @override
+  _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
+}
 
+class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+  final List<Product> products = [];
+  var _showOnlyFavorite = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +31,15 @@ class ProductsOverviewScreen extends StatelessWidget {
         title: Text("MyShop"),
         actions: [
           PopupMenuButton(
-            // onSelected: ,
+            onSelected: (FilterOptions selectedValue) {
+              setState(() {
+                if (selectedValue == FilterOptions.Favorites) {
+                  _showOnlyFavorite = true;
+                } else {
+                  _showOnlyFavorite = false;
+                }
+              });
+            },
             itemBuilder: (_) => [
               PopupMenuItem(
                 child: Text("Only Favorites"),
@@ -32,10 +51,23 @@ class ProductsOverviewScreen extends StatelessWidget {
               ),
             ],
             icon: Icon(Icons.more_vert),
-          )
+          ),
+          Consumer<Cart>(
+            builder: (_, cart, ch) => Badge(
+              child: ch,
+              value: cart.itemCount.toString(),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routName);
+              },
+            ),
+          ),
         ],
       ),
-      body: ProductsGrid(),
+      drawer: AppDrawer(),
+      body: ProductsGrid(_showOnlyFavorite),
     );
   }
 }

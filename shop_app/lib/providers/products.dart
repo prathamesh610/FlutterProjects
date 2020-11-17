@@ -40,6 +40,9 @@ class Products with ChangeNotifier {
   ];
 
   List<Product> get items {
+    // if (_showFavoritesOnly) {
+    //   return _items.where((prodItem) => prodItem.isFavorite).toList();
+    // }
     /*
     Using Spread operator since we want to return a copy of the items
     And in Dart, every object is reference type. So when we return anything,
@@ -51,6 +54,10 @@ class Products with ChangeNotifier {
     return [..._items];
   }
 
+  List<Product> get favItems {
+    return _items.where((prodId) => prodId.isFavorite).toList();
+  }
+
   void addProducts() {
     // _items.add(value);
     notifyListeners();
@@ -59,4 +66,14 @@ class Products with ChangeNotifier {
   Product findById(String id) {
     return items.firstWhere((prod) => prod.id == id);
   }
+
+  // void showFavoritesOnly() {
+  //   _showFavoritesOnly = true;
+  //   notifyListeners();
+  // }
+
+  // void showAll() {
+  //   _showFavoritesOnly = false;
+  //   notifyListeners();
+  // }
 }

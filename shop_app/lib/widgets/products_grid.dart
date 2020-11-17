@@ -5,6 +5,8 @@ import '../providers/products.dart';
 import './product_item.dart';
 
 class ProductsGrid extends StatelessWidget {
+  final bool showFav;
+  ProductsGrid(this.showFav);
   @override
   Widget build(BuildContext context) {
     // Using Provider
@@ -12,7 +14,7 @@ class ProductsGrid extends StatelessWidget {
     // This method and its childs will only rebuild if data changes here.
     // Not the entire widget tree!
     final productsData = Provider.of<Products>(context);
-    final products = productsData.items;
+    final products = showFav ? productsData.favItems : productsData.items;
     return GridView.builder(
       padding: const EdgeInsets.all(10),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
