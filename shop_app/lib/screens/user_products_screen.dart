@@ -1,3 +1,5 @@
+// import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +12,10 @@ import '../widgets/app_drawer.dart';
 
 class UserProductsScreen extends StatelessWidget {
   static const routNamed = '/user-products';
+  Future<void> _refresh(BuildContext context) async {
+    await Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,22 +32,34 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: Consumer<Products>(
-        builder: (_, product, ch) => Padding(
-          padding: EdgeInsets.all(8),
-          child: ListView.builder(
-            itemBuilder: (_, i) => Column(
-              children: [
-                UserProductItem(
-                  product.items[i].title,
-                  product.items[i].imageUrl,
-                ),
-                Divider(),
-              ],
-            ),
-            itemCount: product.items.length,
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refresh(context),
+        builder: (ctx, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _refresh(context),
+                    child: Consumer<Products>(
+                      builder: (_, product, ch) => Padding(
+                        padding: EdgeInsets.all(8),
+                        child: ListView.builder(
+                          itemBuilder: (_, i) => Column(
+                            children: [
+                              UserProductItem(
+                                product.items[i].id,
+                                product.items[i].title,
+                                product.items[i].imageUrl,
+                              ),
+                              Divider(),
+                            ],
+                          ),
+                          itemCount: product.items.length,
+                        ),
+                      ),
+                    ),
+                  ),
       ),
     );
   }

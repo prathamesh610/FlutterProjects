@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     // This Widget ClipRRect forces the child into certain shape
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
@@ -22,9 +24,13 @@ class ProductItem extends StatelessWidget {
           );
         },
         child: GridTile(
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              image: NetworkImage(product.imageUrl),
+              placeholder: AssetImage('assets/images/product-placeholder.png'),
+              fit: BoxFit.cover,
+            ),
           ),
           // There also exists a header in order to display some information above!
           footer: GridTileBar(
@@ -38,7 +44,7 @@ class ProductItem extends StatelessWidget {
                 ),
                 color: Theme.of(context).accentColor,
                 onPressed: () {
-                  product.toggleFavoriteStatus();
+                  product.toggleFavoriteStatus(authData.token, authData.userId);
                 },
               ),
             ),
