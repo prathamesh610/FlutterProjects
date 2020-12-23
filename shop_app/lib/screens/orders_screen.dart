@@ -24,7 +24,6 @@ class OrdersScreen extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           } else {
             if (dataSnapshot.error != null) {
-              // TODO error handling stuff
               // ...
               return Center(
                 child: Text("An error has occurred!"),
