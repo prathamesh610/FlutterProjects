@@ -39,15 +39,18 @@ class PlaceDetailScreen extends StatelessWidget {
             height: 10,
           ),
           FlatButton(
-            onPressed: Navigator.of(context).push(MaterialPageRoute(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                fullscreenDialog: true,
                 builder: (ctx) => MapsScreen(
-                      initialLocation: selectedPlace.location,
-                      isSelecting: false,
-                    ),
-                fullscreenDialog: true)),
+                  initialLocation: selectedPlace.location,
+                  isSelecting: false,
+                ),
+              ));
+            },
             child: Text('View On Map'),
             textColor: Theme.of(context).primaryColor,
-          )
+          ),
         ],
       ),
     );
