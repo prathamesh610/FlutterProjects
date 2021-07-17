@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
           snapshot.connectionState == ConnectionState.waiting
               ? CircularProgressIndicator()
               : MaterialApp(
+                  debugShowCheckedModeBanner: false,
                   title: 'FlutterChat',
                   theme: ThemeData(
                     primarySwatch: Colors.pink,
